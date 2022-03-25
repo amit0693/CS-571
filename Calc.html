@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Calculator</title>
+  <style>
+    *, *::before, *::after {
+    box-sizing: border-box;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: normal;
+    }
+
+    body {
+        padding: 0%;
+        margin: 0%;
+        background: linear-gradient(to right, #000000, #f0ffff);
+    }
+    .title{
+        grid-column: 1 / -1;
+        background-color: rgba(238, 234, 234, 0.75);
+        font-size: 1rem;
+        padding: 2px;
+        border-style: ridge;
+    }
+    .outline{
+        width: 8.6cm;
+        border-style: ridge;
+        background-color: white;
+        display: grid;
+        justify-content: center;
+        align-content: center;
+        grid-template-columns: repeat(4, 80px);
+        grid-template-rows: minmax(2px) repeat(5,50px);
+    }
+    .calculator-grid {
+        display: grid;
+        justify-content: center;
+        align-content: center;
+        min-height: 100vh;
+    }
+
+    .calculator-grid >button{
+        cursor: pointer;
+        font-size: 1rem;
+        
+        background-color: white (255,255, 255, .75);
+        row-gap: 10px;
+    }
+    .calculator-grid >button:hover {
+        background-color: rgb(240, 233, 233) (255,255, 255, .9);
+    }
+    .output {
+        grid-column: 1/-1;
+        background-color: rgb(243, 235, 235);
+        font-size: 1.5rem;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        flex-direction: column;
+        padding: 10px;
+        border-style: ridge;
+    }
+    .output .secondelement {
+        color: black;
+        font-size: 1rem;
+    }
+    .output .firstTextelement {
+        color: black;
+        font-size: 1rem;
+    }
+  </style>
+    <!-- <script src="script6.js" defer></script> -->
+</head>
+<body>
+  <div class="calculator-grid">
+    <div class="outline">
+      <div class = title>My Calculator</div>
+      <div class="output">
+        <div result></div>
+      </div>
+      <button on>ON</button>
+      <button off>OFF</button>
+      <button number>0</button>
+      <button number>1</button>
+      <button number>2</button>
+      <button number>3</button>
+      <button number>4</button>
+      <button number>5</button>
+      <button number>6</button>
+      <button number>7</button>
+      <button number>8</button>
+      <button number>9</button>
+      <button operation>+</button>
+      <button operation>-</button>
+      <button operation>*</button>
+      <button operation>/</button>
+      <button equals>=</button>
+      <button all-clear>clear</button>
+      <script type="text/javascript">
+        var onflag=0
+    var stack=[]
+    class Calculator{
+        constructor(expressionTextelement){
+            this.expressionTextelement=expressionTextelement
+            this.clear()
+            this.on()
+        }
+        on(){
+            if (onflag==1) {
+              return
+            }
+            this.expression = '0'
+            onflag=1
+            
+          }  
+          clear() {
+            if (onflag==0) {
+              return
+            }
+            this.expression='0'
+            this.operation = undefined
+            stack=[]
+          }
+          off() {
+            this.clear()
+            this.expression = this.expression.toString().slice(0,0)
+            onflag=0
+            
+            stack=[]
+          }
+        addNumber(number) {
+            this.expression = this.expression.toString() + number.toString()
+            
+        }    
+        addOperation(operation){
+          if (this.expression!=0) {
+            this.expression = this.expression.toString() + operation.toString()
+            
+          }
+            
+            
+        }
+        equal(){
+            let tempStack = [];
+            let computation = stack
+            for (let index = 0; index < computation.length; index++) {
+                let element = computation[index]
+                if (element === "1" || element === "2" || element === "3" || element === "4" || element === "5"|| element === "6"|| element === "7"|| element === "8"|| element === "9") {
+                    tempStack.push(Number(element))
+                }
+                else {
+                    let x=tempStack.pop()
+                    let z=tempStack.pop()
+                    if (x === "UnderFlow" || z === "UnderFlow" ) {
+                        return 
+                    }
+                    switch (element) {
+                        case '+':
+                          tempStack.push(z + x);
+                            break;
+                        case '-':
+                          tempStack.push(z - x);
+                            break;
+                        case '*':
+                          tempStack.push(z * x);
+                            break;
+                        case '/':
+                          tempStack.push(z / x);
+                            break;
+                        
+                        default:
+                            return
+                    }
+                }
+            }
+            const finalAns = tempStack.pop();
+            this.expression = finalAns;
+            return finalAns;
+            }
+        Display(){
+          
+          this.expressionTextelement.innerText=this.expression 
+            
+        }
+    }
+    const nButton = document.querySelectorAll('[number]')
+    const oButtons = document.querySelectorAll('[operation]')
+    const eqButton = document.querySelector('[equals]')
+    const ofButton = document.querySelector('[off]')
+    const onButton = document.querySelector('[on]')
+    const ACButton = document.querySelector('[all-clear]')
+    const expressionTextelement = document.querySelector('[result]')
+    const calculator = new Calculator(expressionTextelement)
+    nButton.forEach(button => {
+        button.addEventListener('click', () => {   
+          if (onflag==1) {
+            calculator.addNumber(button.innerText)
+            calculator.Display()
+            stack.push(button.innerText)
+            
+          }  
+        })
+      })
+      oButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            if (onflag==1) {
+                calculator.addOperation(button.innerText)
+                calculator.Display()
+                stack.push(button.innerText) 
+                
+            }
+        })
+      })
+      eqButton.addEventListener('click', button => {
+        calculator.equal()
+        calculator.Display()
+      })
+      ACButton.addEventListener('click', button => {
+        calculator.clear()
+        calculator.Display()
+      })
+      ofButton.addEventListener('click', button => {
+        calculator.off()
+        calculator.Display()
+      })
+      onButton.addEventListener('click', button => {
+        calculator.on()
+        calculator.Display()
+      })
+      </script>
+    </div>
+  </div>
+</body>
+</html>
